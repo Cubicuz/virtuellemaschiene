@@ -1,0 +1,45 @@
+/reg[1] = 1
+/reg[2] = 1000
+/reg[3] = 0
+/mem[0] = 18
+/mem[1] = 1000
+/mem[1000] = 0
+LOAD 1
+MOV  R1,R0
+LOAD 1000
+MOV  R2,R0
+LOAD 18
+MOV  (R3),R0
+MOV  (R1),R2
+ADD  R2,R1
+MOV  (R2),R1
+JSR  
+RTS 
+/FibSubRoutine
+/mem[0] = anzahl der Rekursion 20
+/mem[1] = speicherstelle 1000
+/reg[1] = aktuelle Rekursion
+/reg[2] = speicherstelle zahl1
+/reg[3] = speicherstelle zahl2
+/reg[4] = speicherstelle ergebnis
+/reg[5] = zahl1
+/reg[6] = ergebnis
+MOV  R0,(R0)
+MOV  R1,R0
+JIZ  
+LOAD 1
+SUB  R1,R0
+MOV  (R2),R1
+JSR  
+LOAD 1
+MOV  R2,(R0) /JIZ
+MOV  R3,R2
+ADD  R3,R0
+MOV  R4,R3
+MOV  (R0),R3
+ADD  R4,R0
+MOV  R5,(R3)
+MOV  R6,(R2)
+ADD  R6,R5
+MOV  (R4),R6
+RTS 

@@ -36,13 +36,13 @@ void VirtuelleMaschiene::run(){
 			case 0:
 				reg[((memory[programCounter] & 0xF0) >> 4)] = reg[((memory[programCounter] & 0xF00) >> 8)];
 				break;
-			case 1:
-				reg[((memory[programCounter] & 0xF0) >> 4)] = memory[((memory[programCounter] & 0xF00) >> 8)];
+			case 1: // From Mem
+				reg[((memory[programCounter] & 0xF0) >> 4)] = memory[reg[((memory[programCounter] & 0xF00) >> 8)]];
 				break;
-			case 2:
+			case 2: // To Mem
 				memory[reg[((memory[programCounter] & 0xF0) >> 4)]] = reg[((memory[programCounter] & 0xF00) >> 8)];
 				break;
-			case 3:
+			case 3: // From Mem To Mem
 				memory[reg[((memory[programCounter] & 0xF0) >> 4)]] = memory[reg[((memory[programCounter] & 0xF00) >> 8)]];
 				break;
 			default:
@@ -60,7 +60,6 @@ void VirtuelleMaschiene::run(){
 			reg[((memory[programCounter] & 0xF0) >> 4)] *= reg[((memory[programCounter] & 0xF00) >> 8)];
 			break;
 		case DIV:	//DIV
-			cout << "Division wird aufgerufen";
 			reg[((memory[programCounter] & 0xF0) >> 4)] /= reg[((memory[programCounter] & 0xF00) >> 8)];
 			break;
 		case PUSH:	//PUSH
@@ -85,26 +84,37 @@ void VirtuelleMaschiene::run(){
 			programCounter = (memory[programCounter] >> 4)-1;
 			break;
 		case JIZ:	//JIZ
-			if (reg[0] == 0)
-				programCounter = (memory[programCounter] >> 4)-1;
+			if (reg[0] == 0) {
+				programCounter = (memory[programCounter] >> 4) - 1;
+			}
 			break;
 		case JIH:	//JIH
-			if (reg[0] != 0)
-				programCounter = (memory[programCounter] >> 4)-1;
+			if (reg[0] != 0){
+				programCounter = (memory[programCounter] >> 4) - 1;
+			}
 			break;
 		case JSR:	//JSR
-			if ((stackPointer - stack) > 31){
+			if ((stackPointer - stack) > 4095){
 				cout << "subStack voll";
 			}
 			else {
 				*stackPointer = programCounter;
 				stackPointer++;
+				for (int i = 0; i < 16; i++){
+					*stackPointer = reg[i];
+					reg[i] = 0;
+					stackPointer++;
+				}
 				programCounter = (memory[programCounter] >> 4)-1;
 			}
 			break;
 		case RTS:	//RTS
 			if (stack == stackPointer)
 				return;
+			for (int i = 15; i >= 0; i--){
+				stackPointer--;
+				reg[i] = *stackPointer;
+			}
 			stackPointer--;
 			programCounter = *stackPointer;
 			break;
@@ -112,8 +122,12 @@ void VirtuelleMaschiene::run(){
 			cout << "shit just got realy real" << endl;
 			break;
 		}
-		programCounter++;
 		cout << programCounter << endl;
+		programCounter++;
+		if (programCounter > 4090){
+			cout << "PC over 4000";
+			return;
+		}
 	}
 }
 VirtuelleMaschiene::VirtuelleMaschiene(char fileLocation[])

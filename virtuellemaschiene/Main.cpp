@@ -6,7 +6,11 @@ using namespace std;
 
 int main(){
 	Assembler test("code.txt", "output.txt");
-
+	VirtuelleMaschiene machine("output.txt");
+	machine.run();
+	machine.printMem(995, 1025);
+	
+//	machine.printReg();
 	cout << endl;
 /*	char blabla[40];
 	ofstream file("output.txt", ios::out);
