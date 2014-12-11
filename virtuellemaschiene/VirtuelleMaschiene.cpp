@@ -1,6 +1,7 @@
 #include "VirtuelleMaschiene.h"
 #include <fstream>
 #include <iostream>
+#include "FArray.h"
 using namespace std;
 
 enum CMD
@@ -23,6 +24,7 @@ enum CMD
 
 void VirtuelleMaschiene::run(){
 	while (true){
+		profiler[programCounter]++;
 		switch (memory[programCounter] & 0xF)
 		{
 		case NOP:	//NOP
@@ -124,20 +126,20 @@ void VirtuelleMaschiene::run(){
 		}
 		cout << programCounter << endl;
 		programCounter++;
-		if (programCounter > 4090){
-			cout << "PC over 4000";
+		if (programCounter > 4096){
+			cout << "PC Overflow";
 			return;
 		}
 	}
 }
 VirtuelleMaschiene::VirtuelleMaschiene(char fileLocation[])
-: programCounter(0), stackPointer(stack)
-{
+: programCounter(0), stackPointer(stack){
 	for (short i = 0; i < 16; i++){
 		reg[i] = 0;
 	}
 	for (short i = 0; i < 4096; i++){
 		memory[i] = 0;
+		profiler[i] = 0;
 	}
 	ifstream f(fileLocation, ios::in);
 	char c[80];
@@ -172,4 +174,17 @@ VirtuelleMaschiene::~VirtuelleMaschiene()
 {
 }
 
+void VirtuelleMaschiene::writeProfile(char codeIn []){
+	ifstream inFile(codeIn, ios::in);
+	ofstream outFile("Profile.txt", ios::out);
+	int i = 0;
+	char inLine[40];
+	while (!inFile.eof()){
+		inFile.getline(inLine, 39);
+		outFile << profiler[i] << " " << inLine;
+		
+		outFile << endl;
+		i++;
+	}
 
+}

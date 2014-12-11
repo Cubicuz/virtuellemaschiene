@@ -1,5 +1,6 @@
 #ifndef VirtuelleMaschieneInit
 #define VirtuelleMaschieneInit
+#include "FArray.h"
 class VirtuelleMaschiene
 {
 public:
@@ -8,7 +9,9 @@ public:
 	void printMem(short start, short end);
 	void printReg();
 	void run();
+	void writeProfile(char []);
 private:
+	int profiler [4096];
 	short programCounter;
 	unsigned short memory [4096];
 	unsigned short reg[16];
